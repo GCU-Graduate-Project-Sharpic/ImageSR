@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel 
+FROM pytorch/pytorch
 WORKDIR /usr/src
 RUN apt-get -y -qq update && \
     pip install numpy matplotlib librosa opencv-contrib-python
