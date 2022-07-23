@@ -1,7 +1,7 @@
 FROM pytorch/pytorch
-WORKDIR /usr/src
-RUN apt-get -y -qq update && \
+RUN apt-get -y update && \
     pip install numpy matplotlib librosa opencv-contrib-python
+RUN apt-get -y install libgl1-mesa-glx
+RUN apt-get -y install libglib2.0-0
 COPY . .
-CMD ["test.py"]
-ENTRYPOINT ["python3"]
+CMD ["/bin/bash"]
