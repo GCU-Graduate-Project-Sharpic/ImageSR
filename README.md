@@ -45,5 +45,8 @@ We use super resolution algorithms below
 > `jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root` <-- Connect to your port
 
 ## Result (DIV2K 900-999) images 
-- DIV2K 998 image (LR : HR)  
-<img src = "./figs/DIV2k_998.png">
+- DIV2K 998 image (LR : HR), RealSR with Kernel Estimation  
+<img src = "./figs/DIV2k_998.png">  
+
+- DIV2K 998 image (LR : HR), EDSR without Kernel Estimation  
+<img src = "./figs/edsr_cv.png>
