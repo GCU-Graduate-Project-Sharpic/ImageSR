@@ -14,7 +14,7 @@ We use super resolution algorithms below
 - [Tencent RealSR](https://github.com/jixiaozhong/RealSR)
 - [OpenCV & OpenCV contrib](https://github.com/opencv/opencv)
 
-We also want to train above algorithms(EDSR & ESPCN) using RealSR's dataset generator.  
+**We also want to train above algorithms(EDSR & ESPCN) using RealSR's dataset generator.**  
 
 ## Pre-requirements  
 > You can simply match it by using docker  
