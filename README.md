@@ -1,6 +1,12 @@
 # ImageSR
-This is cloned project of the "[Tencent RealSR](https://github.com/jixiaozhong/RealSR)".  
-It automatically generate HQ image from LQ images. (Less than 2K).  
+**IMPORTANT**  
+Codes are cloned from [Tencent-RealSR](https://github.com/jixiaozhong/RealSR) project.  
+In order to apply a model with very nice performance to the project, the cloned code was partially modified and fit to the project.  
+
+**About ImageSR**  
+ImageSR is a part of the "[Sharpic](https://github.com/GCU-Graduate-Project-Sharpic/Sharpic)", which automatically generate HQ image from LQ images. (Less than 2K).  
+By using RealSR's kernel-estimation method, we were able to train by preparing a great dataset for the **real world**.  
+
   
 We use super resolution algorithms below
 - [EDSR (cv)](https://github.com/sanghyun-son/EDSR-PyTorch)
@@ -8,12 +14,17 @@ We use super resolution algorithms below
 - [Tencent RealSR](https://github.com/jixiaozhong/RealSR)
 - [OpenCV & OpenCV contrib](https://github.com/opencv/opencv)
 
+We also want to train above algorithms(EDSR & ESPCN) using RealSR's dataset generator.  
+
 ## Pre-requirements  
-> docker  
+> You can simply match it by using docker  
 
 ## Training environment 
 > NVIDIA Tesla P100 GPU (Colab Pro)  
 > CUDA  
+> pytorch  
+
+> `Time consumption: (6H 30M)`
 
 ## Docker settings 
 
@@ -35,4 +46,4 @@ We use super resolution algorithms below
 
 ## Result (DIV2K 900-999) images 
 - DIV2K 998 image (LR : HR)  
-<img src = "./fig/DIV2k_998.png">
+<img src = "./figs/DIV2k_998.png">
