@@ -49,4 +49,4 @@ We use super resolution algorithms below
 <img src = "./figs/DIV2k_998.png">  
 
 - DIV2K 998 image (LR : HR), EDSR without Kernel Estimation  
-<img src = "./figs/edsr_cv.png>
+<img src = "./figs/edsr_cv.png">
