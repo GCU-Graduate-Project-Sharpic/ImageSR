@@ -4,7 +4,7 @@ It automatically generate HQ image from LQ images. (Less than 2K).
   
 We use super resolution algorithms below
 - [EDSR (cv)](https://github.com/sanghyun-son/EDSR-PyTorch)
-- [ESPCN (cv)] (https://github.com/Lornatang/ESPCN-PyTorch)
+- [ESPCN (cv)](https://github.com/Lornatang/ESPCN-PyTorch)
 - [Tencent RealSR](https://github.com/jixiaozhong/RealSR)
 - [OpenCV & OpenCV contrib](https://github.com/opencv/opencv)
 
@@ -12,7 +12,7 @@ We use super resolution algorithms below
 > docker  
 
 ## Training environment 
-> NVIDIA Tesla P100 GPU (Colab Pro)
+> NVIDIA Tesla P100 GPU (Colab Pro)  
 > CUDA  
 
 ## Docker settings 
