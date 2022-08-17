@@ -62,35 +62,14 @@ It cause error while getting PSNR value. But other things works properly, so don
    iii) path:  
            pretrained_model_G: if you downloaded DF2K.pth, then set it as DF2K. else, do nothing.
            
-7. Run below command(0 for 1 GPUs, set as you want if you have GPU > 1)  
-   `cd codes/` then  
-   `CUDA_VISIBLE_DEVICES=0 python3 test.py -opt options/df2k/test_df2k.yml`  
+7. Run shell file (exec.sh)  
+   `$ sh exec.sh`  
    The result will be in `../results/your_name/` folder.  
    
 
 ## Sample images (DIV2K 998)  
 - DIV2K 998 image (LR : HR), RealSR with Kernel Estimation  
-<img src = "./figs/DIV2k_998.png">  
+<img src = "./RealSR/figs/DIV2k_998.png">  
 
 - DIV2K 998 image (LR : HR), EDSR without Kernel Estimation  
-<img src = "./figs/edsr_cv.png">
-
-
-# -------------------------Will be trashed---------------------------
-## Docker settings (No longer support. Please follow upper Pre-requirements. )
-
-**IMPORTANT**  
-> You can just simply clone the [Sharpic Repository](https://github.com/GCU-Graduate-Project-Sharpic/Sharpic) then build using makefile.  
-> Or, if you want to simply run this SR method, You should follow below information.  
-
-> 1. Build docker file  
-> `docker build -t built_dockerfile .` (You can freely change the name of `built_dockerfile`)  
-> 
-> 2. Run to save docker images into repository  
-> `docker run -itd --name torch_docker -v /home/hyun/share:/root/share -p 8888:8888 --restart=always built_dockerfile`  
-> In above command, you can freely change `hyun` as your account ID and  
-> `built_dockerfile` as name which you changed above.  
-> 
-> (Optinal) To use jupyter notebook as editor, follow below commands.  
-> `conda install jupyter` <-- Install jupyter notebook in your docker  
-> `jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root` <-- Connect to your port
+<img src = "./RealSR/figs/edsr_cv.png">
