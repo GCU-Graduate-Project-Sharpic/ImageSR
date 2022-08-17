@@ -50,11 +50,11 @@ It cause error while getting PSNR value. But other things works properly, so don
    i)  **DF2K.pth**  
    ii) **latest_G_rgb.pth** <- Recommended
    
-3. Place the downloaded model into `/trained_model/` folder.  
+3. Place the downloaded model into `./RealSR/trained_model/` folder.  
 
 4. Download test LQ image from [this link](https://drive.google.com/drive/folders/1dNm4yilKnKB_oQJrWQHygeehtQVSzB7J?usp=sharing). 
 
-5. Place all the images into `/datasets/LQ_te/` folder and **DELETE text file in folder**.  
+5. Place all the images into `./RealSR/datasets/LQ_te/` folder and **DELETE text file in folder**.  
 
 6. Open `codes/options/df2k/test_df2k.yml` and set below things.  
    i)   gpu_ids: [N]  
@@ -64,7 +64,8 @@ It cause error while getting PSNR value. But other things works properly, so don
            
 7. Run shell file (exec.sh)  
    `$ sh exec.sh`  
-   The result will be in `../results/your_name/` folder.  
+   In exec.sh file, `CUDA_VISIBLE_DEVICES=X`, makes X as your GPUs number - 1. (e.g) For one GPU, then X = 0)  
+   The result will be in `./RealSR/results/your_name/` folder.  
    
 
 ## Sample images (DIV2K 998)  
