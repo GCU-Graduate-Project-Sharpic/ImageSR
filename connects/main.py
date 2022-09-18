@@ -8,7 +8,7 @@ import alert
 
 
 def localhost_info():
-    host, dbname = '192.168.35.38', 'Sharpic'
+    host, dbname = '192.168.35.83', 'Sharpic'
     user, password = 'postgres', 'secret'
     port = 5432
 

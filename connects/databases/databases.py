@@ -119,7 +119,7 @@ class Databases:
 
     def upload(self, username, filename, is_sr):
         filename = filename.split('/')[-1]
-        path = '../../RealSR/results/Sharpic-SR/DIV2K/' + filename
+        path = '../RealSR/results/Sharpic-SR/DIV2K/' + filename
 
         file_size = os.path.getsize(path)
         user_name = username
