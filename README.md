@@ -26,6 +26,7 @@ All the other requirements can be matched from below.
 - TensorBoard:  
 PyTorch >= 1.1: `pip install tb-nightly future`  
 PyTorch == 1.0: `pip install tensorboardX`
+- DotEnv: `pip install python-dotenv`
 
 ## Training environment 
 > NVIDIA GPU & CUDA  

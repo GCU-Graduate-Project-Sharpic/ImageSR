@@ -2,15 +2,19 @@ import argparse
 import os
 import sys
 import time
+from dotenv import load_dotenv
 
 from databases.databases import Databases
 import alert
 
 
 def localhost_info():
-    host, dbname = '192.168.35.83', 'Sharpic'
-    user, password = 'postgres', 'secret'
-    port = 5432
+    load_dotenv()
+    host, dbname = os.environ.get('HOST'), os.environ.get('DATABASE')
+    user, password = os.environ.get('USER_SQL'), os.environ.get('PASS')
+    port = os.environ.get('PORT')
+
+    print(host, dbname, user, password, port)
 
     return host, dbname, user, password, port
 
