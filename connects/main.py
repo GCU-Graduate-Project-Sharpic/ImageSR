@@ -6,8 +6,8 @@ import databases.databases as db
 
 
 def localhost_info():
-    host, dbname = 'localhost', 'postgres'
-    user, password = 'postgres', 'Carpe06*'
+    host, dbname = 'localhost', 'Sharpic'
+    user, password = 'postgres', 'sharpgcu75!@'
     port = 5432
 
     return host, dbname, user, password, port
@@ -26,8 +26,11 @@ def backend_info():
 
 if __name__ == '__main__':
 
-    db_handler = db.Databases(*backend_info())
+    db_handler = db.Databases(*localhost_info())
     db_handler.init_db(force_init=False)
+
+    # initial clear
+    db_handler.clear_local()
 
     # loop every 5 seconds
     while True:
@@ -38,5 +41,5 @@ if __name__ == '__main__':
             print("No process to be done")
         else:
             db_handler.process_db(process_list)
-
+            db_handler.clear_local()
         time.sleep(5)
