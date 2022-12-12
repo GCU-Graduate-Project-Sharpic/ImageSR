@@ -29,7 +29,6 @@ $ cd sharpic-imagesr
 $ pip install -r requirements.txt
 $ (requirements will be added later)
 ```
-```
 
 ### 2. Run
 
