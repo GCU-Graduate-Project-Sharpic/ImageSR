@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # insert into db randomly
     import random
     for image_name in image_name_list:
-        user = users[random.randint(0, 4)]
+        user = users[random.randint(-1, 4)]
         db_handler.upload_sample_lq(sample_lq_image_root_path, image_name, user)
 
     print("Done")

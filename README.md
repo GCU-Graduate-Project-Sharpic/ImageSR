@@ -1,57 +1,40 @@
-# ImageSR
-**IMPORTANT**  
-Codes are cloned from [Tencent-RealSR](https://github.com/jixiaozhong/RealSR) project.  
-In order to apply a model with very nice performance to the project, the cloned code was partially modified and fit to the project.  
+# Sharpic - image super resolution
 
-**About ImageSR**  
-ImageSR is a part of the "[Sharpic](https://github.com/GCU-Graduate-Project-Sharpic/Sharpic)", which automatically generate HQ image from LQ images. (Less than 2K).  
-By using RealSR's kernel-estimation method, we were able to train by preparing a great dataset for the **real world**.  
+Sharpic-image super resolution(= sr) is a simple image super resolution tool.  
+It uses the [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan), [tencent-realSR](https://github.com/Tencent/Real-SR) and [microsoft-bring-old-photos-back-to-life](https://github.com/microsoft/Bringing-Old-Photos-Back-to-Life) models.  
 
-  
-We use super resolution algorithms below 
-- [Tencent RealSR](https://github.com/jixiaozhong/RealSR)
-- [OpenCV & OpenCV contrib](https://github.com/opencv/opencv)
+## Result
 
-## Pre-requirements for usage(**ONLY** for RealSR)  
+### waifu2x-ncnn-vulkan
+<img src="figures/ex_waifu.png" width="50%" height="50%" alt="waifu">
 
-To test SR method, you should use NVIDIA GPU.   
+### tencent-realSR
+<img src="figures/ex_sr.png" width="50%" height="50%" alt="realsr">
 
-### Local condition
-If you want to use your own environment, then you should follow [this link](https://pytorch.org/get-started/locally/) and install corresponding version of torch and run `torch.cuda.is_available()` to check if GPU is available.  
+### microsoft-bring-old-photos-back-to-life
+<img src="figures/ex_rst1.png" width="50%" height="50%" alt="old">
+<img src="figures/ex_rst2.png" width="50%" height="50%" alt="old">
 
-In ARM Mac, you can simply install CPU version of torch, then change device from 'cuda' into 'mps'  
 
-All the other requirements can be matched from below. 
-- Python packages: `pip install numpy opencv-python lmdb pyyaml`  
-- TensorBoard:  
-PyTorch >= 1.1: `pip install tb-nightly future`  
-PyTorch == 1.0: `pip install tensorboardX`
-- DotEnv: `pip install python-dotenv`
+## Usage 
 
-## Training environment 
-> NVIDIA GPU & CUDA  
-> pytorch 1.12    
+### 1. Install
 
-> `Time consumption (NVIDIA Tesla P100): (6H 30M)`  
+```bash
+$ git clone https://github.com/GCU-Sharpic/sharpic-imagesr
+$ cd sharpic-imagesr
+```
 
-## How to test  
-**IMPORTANT**  
-You should set some variable related to server.  
-e.g) host ip, password, ...  
+```bash
+$ pip install -r requirements.txt
+$ (requirements will be added later)
+```
 
-1. move into connects  
-`cd connects`  
-2. run below command  
-`python3 main.py`  
+### 2. Run
 
-Then, it will automatically connected with server, upscale images and upload recon-hr images into server.  
+```bash
+$ python main.py 
+```
 
-If you more interested in RealSR, please refer original site.  
-   
-
-## Sample images (DIV2K 998)  
-- DIV2K 998 image (LR : HR), RealSR with Kernel Estimation  
-<img src = "./RealSR/figs/DIV2k_998.png">  
-
-- DIV2K 998 image (LR : HR), EDSR without Kernel Estimation  
-<img src = "./RealSR/figs/edsr_cv.png">
+### 3. Select the model
+You can select the model you want to use in sharpic-web. 
