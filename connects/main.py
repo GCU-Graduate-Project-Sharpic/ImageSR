@@ -5,14 +5,6 @@ from dotenv import load_dotenv
 import databases.databases as db
 
 
-def localhost_info():
-    host, dbname = 'localhost', 'Sharpic'
-    user, password = 'postgres', 'sharpgcu75!@'
-    port = 5432
-
-    return host, dbname, user, password, port
-
-
 def backend_info():
     load_dotenv()
     host, dbname = os.environ.get('HOST_RAS'), os.environ.get('DATABASE_RAS')
@@ -26,7 +18,7 @@ def backend_info():
 
 if __name__ == '__main__':
 
-    db_handler = db.Databases(*localhost_info())
+    db_handler = db.Databases(*backend_info())
     db_handler.init_db(force_init=False)
 
     # initial clear

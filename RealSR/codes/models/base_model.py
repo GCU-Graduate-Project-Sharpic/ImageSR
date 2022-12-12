@@ -8,7 +8,7 @@ from torch.nn.parallel import DistributedDataParallel
 class BaseModel():
     def __init__(self, opt):
         self.opt = opt
-        self.device = torch.device('mps')
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('mps')
         self.is_train = opt['is_train']
         self.schedulers = []
         self.optimizers = []
