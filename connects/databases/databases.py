@@ -1,6 +1,8 @@
 import psycopg2
 import os
 
+import torch.cuda
+
 
 def _change_ext(image_name):
     if image_name.endswith('.jpg'):
@@ -170,7 +172,14 @@ class Databases:
         import os
         # get name of all files in the directory
         if len(os.listdir('./LQ/0/')) != 0:
-            os.system('../RealSR/codes/SR_MPS.sh')
+            print("SR processing does not support CPU")
+            print("ONLY support CUDA or MPS")
+            if torch.cuda.is_available():
+                print("Using GPU")
+                os.system("../RealSR/codes/SR_CUDA.sh")
+            else:
+                print("Using MPS")
+                os.system('../RealSR/codes/SR_MPS.sh')
 
         if len(os.listdir('./LQ/1/')) != 0:
             # change directory using os.chdir()
