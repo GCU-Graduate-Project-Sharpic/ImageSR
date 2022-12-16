@@ -1,32 +1,33 @@
 import psycopg2
 import os
-
+import time
 import torch.cuda
-
-
-def _change_ext(image_name):
-    if image_name.endswith('.jpg'):
-        image_name = image_name[:-4] + '.png'
-    elif image_name.endswith('.jpeg'):
-        image_name = image_name[:-5] + '.png'
-    return image_name
-
 
 class Databases:
     def __init__(self, host, dbname, user, pw, port):
-        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=pw, port=port)
-        self.curs = self.conn.cursor()
-        self.table_scheme = """
-            CREATE TABLE image (id SERIAL PRIMARY KEY, 
-                                username VARCHAR(30) NOT NULL , 
-                                image_name VARCHAR(100) NOT NULL, 
-                                image_file bytea NOT NULL , 
-                                size INT NOT NULL , 
-                                
-                                up int NOT NULL
-            )
-            """
-        print("DB connected")
+
+        # Waiting db initialization
+        start_time = time.time()
+        while (time.time() - start_time) < 15 :
+            try: 
+                self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=pw, port=port)
+                self.curs = self.conn.cursor()
+                self.table_scheme = """
+                    CREATE TABLE image (id SERIAL PRIMARY KEY, 
+                                        username VARCHAR(30) NOT NULL , 
+                                        image_name VARCHAR(100) NOT NULL, 
+                                        image_file bytea NOT NULL , 
+                                        size INT NOT NULL , 
+                                        
+                                        up int NOT NULL
+                    )
+                    """
+                print("DB connected")
+                break
+            except psycopg2.OperationalError as e:
+                print(e)
+                print("Waiting DB connection...")
+            time.sleep(1)
 
     """
     Initialize the database
@@ -69,7 +70,7 @@ class Databases:
         """
         TODO: check up type
         """
-        self.curs.execute("SELECT image_name FROM image WHERE up != -1")
+        self.curs.execute("SELECT id FROM image WHERE up != -1 AND NOT EXISTS (SELECT 1 FROM processed_image WHERE id=image.id)")
         unprocessed = self.curs.fetchall()
         unprocessed = [i[0] for i in unprocessed]
         # print("Unprocessed images: ", unprocessed)
@@ -78,15 +79,15 @@ class Databases:
     def _check_pair(self, unprocessed):
         processed = []
         for i in unprocessed:
-            self.curs.execute("SELECT image_name FROM processed_image WHERE image_name = %s", (i,))
+            self.curs.execute("SELECT up FROM processed_image WHERE id = %s", (i,))
             if self.curs.fetchone():
 
                 """
-                check if the pair (same image_name, same up) exists
+                check if the pair (same id, same up) exists
                 """
-                self.curs.execute("SELECT up FROM image WHERE image_name = %s", (i,))
+                self.curs.execute("SELECT up FROM image WHERE id = %s", (i,))
                 up = self.curs.fetchone()[0]
-                self.curs.execute("SELECT up FROM processed_image WHERE image_name = %s", (i,))
+                self.curs.execute("SELECT up FROM processed_image WHERE id = %s", (i,))
                 pr_up = self.curs.fetchone()[0]
 
                 if up == pr_up:
@@ -97,77 +98,62 @@ class Databases:
 
     def glance_db(self):
         unprocessed = self._check_unprocessed()
-        need_process = self._check_pair(unprocessed)
-        return need_process, len(need_process)
+        # need_process = self._check_pair(unprocessed)
+        return unprocessed
 
     """
     Process the image
-    _check_type() checks what types of service the image needs
     _download() downloads the image from the database
     _upload() uploads the processed image to the database
     
     process_db() is called in main.py
     """
-    def _check_type(self, image_name):
-        self.curs.execute("SELECT up FROM image WHERE image_name = %s", (image_name,))
-        up = self.curs.fetchone()[0]
-        return up
+    def _download(self, image_id):
+        image = {'id': image_id}
+        self.curs.execute("SELECT username, image_name, image_file, up FROM image WHERE id = %s", (image_id,))
+        (image['username'], image['image_name'], image['image_file'], image['pr_type']) = self.curs.fetchone()
 
-    def _download(self, image_name):
-        self.curs.execute("SELECT id, image_file, username FROM image WHERE image_name = %s", (image_name,))
-        (npr_id, image_file, user_name) = self.curs.fetchone()
-        pr_type = self._check_type(image_name)
-
-        # make int to str
-        pr_type = str(pr_type)
-
-        image_name = _change_ext(image_name)
-        path = './LQ/' + pr_type + '/' + image_name
+        path = './LQ/' + str(image['pr_type']) + '/' + str(image_id) + ".png"
         f = open(path, 'wb')
-        f.write(image_file)
+        f.write(image['image_file'])
         f.close()
-        print("Fetched {0} into path {1} | Owner: {2}".format(image_name, path, user_name))
+        print("Fetched image (id={0}) into path {1} | Owner: {2}".format(image_id, path, image['username']))
+        return image
 
-    def _upload(self, image_name, id, username):
-        pr_type = self._check_type(image_name)
-        png_image_name = _change_ext(image_name)
+    def _upload(self, image):
+        pr_type = image['pr_type']
         if pr_type == -1:
             return
         elif pr_type == 0:
-            path = '../RealSR/results/Sharpic-SR/DIV2K/' + png_image_name
+            path = '../RealSR/results/Sharpic-SR/DIV2K/' + str(image['id']) + ".png"
         elif pr_type == 1:
-            path = '../BOPB/result/old/final_output/' + png_image_name
+            path = '../BOPB/result/old/final_output/' + str(image['id']) + ".png"
         elif pr_type == 2:
-            path = '../BOPB/result/old_w_scratch/final_output/' + png_image_name
+            path = '../BOPB/result/old_w_scratch/final_output/' + str(image['id']) + ".png"
         elif pr_type == 3:
-            path = '../waifu2x/results/' + png_image_name
+            path = '../waifu2x/results/' + str(image['id']) + ".png"
         else:
             raise ValueError("Error: up value is not 0, 1, 2 or 3")
-
+        print("Uploading ", path)
         assert os.path.exists(path), "Error: path does not exist"
         file_size = os.path.getsize(path)
         f = open(path, 'rb')
 
         file_data = f.read()
-        id = id[1]
-
-        print(id)
-        print(username)
 
         # insert
-        up = self._check_type(image_name)
         self.curs.execute("INSERT INTO processed_image(id, username, image_name, image_file, size, up) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
-                          (id, username, image_name, file_data, int(file_size), up))
+                          (image['id'], image['username'], image['image_name'], file_data, file_size, pr_type))
         self.conn.commit()
         f.close()
-        print("Stored {0} into DB".format(image_name))
+        print("Stored image(id={0}) into DB".format(image['id']))
 
-    def process_db(self, image_list):
+    def process_db(self, image_id_list):
 
-        npr_id_lst = []
-        for image in image_list:
+        image_list = []
+        for image_id in image_id_list:
             # pass
-            npr_id_lst.append(self._download(image))
+            image_list.append(self._download(image_id))
 
         import os
         # get name of all files in the directory
@@ -197,14 +183,10 @@ class Databases:
             os.system('python load_scr_and_run.py')
             os.chdir('../../connects/')
 
-        id_lst = self._get_image_id(image_list)
-        pr, npr, npr_user = id_lst[0], id_lst[1], id_lst[2]
-
-        for idx, image in enumerate(image_list):
-            self._upload(image, npr[idx], npr_user[idx])
+        for image in image_list:
+            self._upload(image)
 
         print("Finished processing")
-        # self.update_album(self._get_album_id(self._get_image_id(image_list)))
 
     """
     Clear the local directory
@@ -228,53 +210,3 @@ class Databases:
             os.remove('../BOPB/result/old_w_scratch/final_output/' + file)
         for file in os.listdir('../waifu2x/results/'):
             os.remove('../waifu2x/results/' + file)
-
-    """
-    Update album
-    1. processing 이 필요한 사진 list 들이 존재한다. 
-    2. 이 때 album_table 에서 해당 사진들(= image_id 로 판별한다.) 의 album_id 를 가져 온다.
-    3. 이후 processing 된 사진들을 album_table 에 insert 한다. 
-    
-    """
-    def _get_image_id(self, need_process, processed: bool = False):
-        processed_img_id_lst = []
-        unprocessed_img_id_lst = []
-        unprocessed_user_lst = []
-
-        if processed:
-            for img in need_process:
-                self.curs.execute("SELECT id FROM processed_image WHERE image_name = %s", (img,))
-                processed_img_id_lst.append([img, self.curs.fetchone()[0]])
-
-        for img in need_process:
-            # get id, username where image_name = img
-            self.curs.execute("SELECT id, username FROM image WHERE image_name = %s", (img,))
-            (temp_id, temp_user) = self.curs.fetchone()
-            unprocessed_img_id_lst.append([img, temp_id])
-            unprocessed_user_lst.append(temp_user)
-
-        return [processed_img_id_lst, unprocessed_img_id_lst, unprocessed_user_lst]  # [[image_name, image_id]]
-
-    def _get_album_id(self, lst):  # img_id_lst = [[image_name, image_id]]
-        processed, not_processed = lst[0], lst[1]
-        album_id_lst = []
-
-        for img in not_processed:
-            self.curs.execute("SELECT album_id FROM album_image WHERE image_id = %s", (img[1],))
-            album_id_lst.append(self.curs.fetchone()[0])
-
-        return album_id_lst  # [[image_name, image_id], album_id]
-
-    def update_album(self, album_id_lst):
-        for album in album_id_lst:
-            image_name = album[0][0]
-            image_id = album[0][1]
-            album_id = album[1]
-
-            print("image_name: {0}, image_id: {1}, album_id: {2}".format(image_name, image_id, album_id))
-
-            self.curs.execute("INSERT INTO album_image(album_id, image_id) VALUES (%s, %s)",
-                              (album_id, image_id))
-            self.conn.commit()
-
-        print("Finished updating album")
