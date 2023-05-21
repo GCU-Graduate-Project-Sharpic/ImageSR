@@ -1,6 +1,6 @@
-# Sharpie - Image Super Resolution
+# Sharpic - Image Super Resolution
 
-Sharpie is a novel cloud-based image restoration service that combines advanced deep learning techniques, specifically RealSR, Waifu2X, and Bringing Old Photos Back to Life, with the accessibility and scalability of cloud computing. The service caters to a wide range of use-cases such as restoring old photographs, improving low-resolution images, and enriching digital media content.
+Sharpic is a novel cloud-based image restoration service that combines advanced deep learning techniques, specifically RealSR, Waifu2X, and Bringing Old Photos Back to Life, with the accessibility and scalability of cloud computing. The service caters to a wide range of use-cases such as restoring old photographs, improving low-resolution images, and enriching digital media content.
 
 ## Result 
 
@@ -33,11 +33,11 @@ $ python main.py
 
 ## Additional Information 
 
-Our aim with Sharpie is to democratize access to state-of-the-art image restoration techniques. By providing a user-friendly platform, we make it possible for users with varying levels of expertise to benefit from these advanced models without needing extensive technical knowledge. Our cloud-based architecture ensures scalability, allowing the service to handle diverse user demands and adapt to future developments in the field. The impact of Sharpie on the digital content industry is significant as it makes cutting-edge image restoration capabilities accessible to a wider audience.
+Our aim with Sharpic is to democratize access to state-of-the-art image restoration techniques. By providing a user-friendly platform, we make it possible for users with varying levels of expertise to benefit from these advanced models without needing extensive technical knowledge. Our cloud-based architecture ensures scalability, allowing the service to handle diverse user demands and adapt to future developments in the field. The impact of Sharpic on the digital content industry is significant as it makes cutting-edge image restoration capabilities accessible to a wider audience.
 
 ## Model Description 
 
-In Sharpie, we make use of three primary models for image restoration and super-resolution:
+In Sharpic, we make use of three primary models for image restoration and super-resolution:
 
 1. RealSR, developed by Tencent, is a super-resolution model that uses a Generative Adversarial Network (GAN) architecture and a Laplacian Pyramid-based Kernel Prediction mechanism to effectively enhance low-resolution images.
    
