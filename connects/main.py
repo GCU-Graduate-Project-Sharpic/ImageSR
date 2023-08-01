@@ -10,10 +10,11 @@ def backend_info():
     host, dbname = os.environ.get('HOST'), os.environ.get('DATABASE')
     user, password = os.environ.get('USER_SQL'), os.environ.get('PASS')
     port = os.environ.get('PORT')
+    minio_host, minio_access_id, minio_access_pw = os.environ.get('MINIO_HOST'), os.environ.get('MINIO_ACCESS_ID'), os.environ.get('MINIO_ACCESS_PW')
 
-    print(host, dbname, user, password, port)
+    print(host, dbname, user, password, port, minio_host, minio_access_id, minio_access_pw)
 
-    return host, dbname, user, password, port
+    return host, dbname, user, password, port, minio_host, minio_access_id, minio_access_pw
 
 
 if __name__ == '__main__':
