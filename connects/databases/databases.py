@@ -2,9 +2,12 @@ import psycopg2
 import os
 import time
 import torch.cuda
+import hashlib
+from minio import Minio
+from minio.error import S3Error
 
 class Databases:
-    def __init__(self, host, dbname, user, pw, port):
+    def __init__(self, host, dbname, user, pw, port, minio_host, minio_access_id, minio_access_pw):
 
         # Waiting db initialization
         start_time = time.time()
@@ -13,16 +16,29 @@ class Databases:
                 self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=pw, port=port)
                 self.curs = self.conn.cursor()
                 self.table_scheme = """
-                    CREATE TABLE image (id SERIAL PRIMARY KEY, 
-                                        username VARCHAR(30) NOT NULL , 
-                                        image_name VARCHAR(100) NOT NULL, 
-                                        image_file bytea NOT NULL , 
-                                        size INT NOT NULL , 
-                                        
-                                        up int NOT NULL
+                    CREATE TABLE image (
+                        id SERIAL PRIMARY KEY,
+                        username VARCHAR(30) REFERENCES user_account,
+                        image_name VARCHAR(100) NOT NULL,
+                        image_hash CHAR(64) NOT NULL,
+                        size int NOT NULL,
+                        added_date timestamp DEFAULT Now(),
+                        up int NOT NULL
                     )
                     """
                 print("DB connected")
+                
+                self.minioClient = Minio(
+                    minio_host,
+                    access_key=minio_access_id,
+                    secret_key=minio_access_pw,
+                    secure=False,
+                )
+
+                # check bucket.
+                found = self.minioClient.bucket_exists("images")
+                if not found:
+                    raise S3Error(f"bucket does not exist")
                 break
             except psycopg2.OperationalError as e:
                 print(e)
@@ -110,8 +126,10 @@ class Databases:
     """
     def _download(self, image_id):
         image = {'id': image_id}
-        self.curs.execute("SELECT username, image_name, image_file, up FROM image WHERE id = %s", (image_id,))
-        (image['username'], image['image_name'], image['image_file'], image['pr_type']) = self.curs.fetchone()
+        self.curs.execute("SELECT username, image_name, image_hash, up FROM image WHERE id = %s", (image_id,))
+        (image['username'], image['image_name'], image['image_hash'], image['pr_type']) = self.curs.fetchone()
+
+        image['image_file'] = self.minioClient.get_object("images", image['image_hash']).read()
 
         path = './LQ/' + str(image['pr_type']) + '/' + str(image_id) + ".png"
         f = open(path, 'wb')
@@ -141,9 +159,17 @@ class Databases:
 
         file_data = f.read()
 
+        # sha256 object create
+        sha256 = hashlib.sha256()
+        # sha256 update
+        sha256.update(file_data)
+        image['image_hash'] = sha256.hexdigest()
+
+        self.minioClient.fput_object("images", image['image_hash'], path)
+
         # insert
-        self.curs.execute("INSERT INTO processed_image(id, username, image_name, image_file, size, up) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
-                          (image['id'], image['username'], image['image_name'], file_data, file_size, pr_type))
+        self.curs.execute("INSERT INTO processed_image(id, username, image_name, image_hash, size, up) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
+                          (image['id'], image['username'], image['image_name'], image['image_hash'], file_size, pr_type))
         self.conn.commit()
         f.close()
         print("Stored image(id={0}) into DB".format(image['id']))
